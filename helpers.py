@@ -1,20 +1,30 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-from unidecode import unidecode
 import random
 from collections import defaultdict
-#from IPython import embed
 
-image_dict = defaultdict(lambda: "https://github.com/sebastiandres/st_pythonchile/blob/main/images/python_chile.png?raw=true")
-image_dict["Pycon 2022"] = "https://github.com/sebastiandres/st_pythonchile/blob/main/images/pycon_2022.png?raw=true"
-image_dict["Pyday 2020"] = "https://github.com/sebastiandres/st_pythonchile/blob/main/images/pyday_2020.png?raw=true"
-image_dict["Sin registro"] = "https://github.com/sebastiandres/st_pythonchile/blob/main/images/sin_registro.png?raw=true"
+import numpy as np
+import pandas as pd
+import streamlit as st
+from unidecode import unidecode
+
+# from IPython import embed
+
+image_dict = defaultdict(
+    lambda: "https://github.com/sebastiandres/st_pythonchile/blob/main/images/python_chile.png?raw=true"
+)
+image_dict[
+    "Pycon 2022"
+] = "https://github.com/sebastiandres/st_pythonchile/blob/main/images/pycon_2022.png?raw=true"
+image_dict[
+    "Pyday 2020"
+] = "https://github.com/sebastiandres/st_pythonchile/blob/main/images/pyday_2020.png?raw=true"
+image_dict[
+    "Sin registro"
+] = "https://github.com/sebastiandres/st_pythonchile/blob/main/images/sin_registro.png?raw=true"
+
 
 def clean_name(name):
-    """
-    """
-    return unidecode(name.strip().replace(" ", "").replace(r"%20","").lower())
+    """ """
+    return unidecode(name.strip().replace(" ", "").replace(r"%20", "").lower())
 
 
 def read_googlesheet(sheet_id, sheet_name, sort_columns):
@@ -29,11 +39,12 @@ def read_googlesheet(sheet_id, sheet_name, sort_columns):
     df = df.sort_values(sort_columns, ascending=False, ignore_index=True)
     return df
 
+
 def html_link(text, link, blank=True):
     # target _blank to open new window
     # extract clickable text to display for your link
-    #youtube = "yutú:"
-    #text = link.replace("https://www.youtube.com/watch?v=", youtube).replace("https://youtu.be/", youtube)
+    # youtube = "yutú:"
+    # text = link.replace("https://www.youtube.com/watch?v=", youtube).replace("https://youtu.be/", youtube)
     if blank:
         return f'<a target="_blank" href="{link}">{text}</a>'
     else:
@@ -51,11 +62,13 @@ def get_mask_for_keyword(df, keyword, search_cols=["autor", "titulo"]):
 
 
 def clickable_image_html(link, image_link, style="width:100%;"):
-    html = f'<a href="{link}" target="_blank"><img src="{image_link}" style="{style}"></a>'
+    html = (
+        f'<a href="{link}" target="_blank"><img src="{image_link}" style="{style}"></a>'
+    )
     return html
 
 
-def get_mask_for_keyword_list(df, keyword_list, search_cols=["autor", "titulo"]):
+def get_mask_for_keyword_list(df, keyword_list, search_cols=["author", "title"]):
     """
     Get a mask from a dataframe based on a list of texts
     """
@@ -68,10 +81,9 @@ def get_mask_for_keyword_list(df, keyword_list, search_cols=["autor", "titulo"])
 def create_card(row, c):
     """
     Creates a card with the information of a row, using streamlit elements
-    row has (at least) columns: ["Evento", "Lugar", "Fecha", "Tipo", "Autor", "Titulo", "Video", "Otros hipervínculos"]
     """
     link = row["Video"].strip()
-    evento = row["Evento"].strip()
+    evento = row["Event"].strip()
     if link != "Sin registro":
         image_link = image_dict[evento]
         clickable_image = f'<a href="{link}" target="_blank"> <img src="{image_link}" style="width:100%;"> </a>'
@@ -79,17 +91,21 @@ def create_card(row, c):
         image_link = image_dict["Sin registro"]
         clickable_image = f'<img src="{image_link}" style="width:100%;">'
     with c:
-        #st.write(clickable_image)
-        st.caption(f"{row['Evento'].strip()} - {row['Lugar'].strip()} - {row['Fecha'].strip()} ")
-        #st.markdown(f"**{row['Autor'].strip()}**")
+        # st.write(clickable_image)
+        st.caption(
+            f"{row['Event'].strip()} - {row['Location'].strip()} - {row['Date'].strip()} "
+        )
+        # st.markdown(f"**{row['Autor'].strip()}**")
         authors_html_list = []
-        for author in row["Autor"].split(";"):
-            authors_html_list.append(html_link(author, f"/?author={author}", blank=True))
+        for author in row["Author"].split(";"):
+            authors_html_list.append(
+                html_link(author, f"/?author={author}", blank=True)
+            )
         authors_html = " | ".join(authors_html_list)
         st.markdown(authors_html + clickable_image, unsafe_allow_html=True)
-        #st.components.v1.html(authors_html + clickable_image)
-        st.markdown(f"{row['Tipo'].strip()}: {row['Titulo'].strip()}")
-        
+        # st.components.v1.html(authors_html + clickable_image)
+        st.markdown(f"{row['Type'].strip()}: {row['Title'].strip()}")
+
 
 def add_style():
     """
@@ -125,6 +141,7 @@ def add_style():
 
     # Execute your app
     st.components.v1.html(my_html, height=0, width=0)
+
 
 def add_color_to_cards():
     """
